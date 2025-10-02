@@ -1,0 +1,1 @@
+removed extra add button on home screen because while it was nice to have and i found myself drawn to pressing it. I found it redundant with the bottom navigation which looks better and is more cohesive with the overall style
