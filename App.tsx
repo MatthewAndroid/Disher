@@ -1,20 +1,45 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {JSX, useState} from 'react';
+import { SafeAreaView, StyleSheet, StatusBar } from 'react-native';
+import HomeScreen from './HomeScreen';
+import AddDishScreen from './AddDishScreen';
+import { Dish } from './types';
 
-export default function App() {
+type Screen = 'Home' | 'AddDish';
+
+const App = (): JSX.Element => {
+  const [currentScreen, setCurrentScreen] = useState<Screen>('Home');
+  const [dishes, setDishes] = useState<Dish[]>([]);
+
+  const handleSaveDish = (dish: Dish) => {
+    setDishes([...dishes, dish]);
+    setCurrentScreen('Home');
+  };
+
+  const handleCancel = () => {
+    setCurrentScreen('Home');
+  };
+
+  const handleNavigateToAdd = () => {
+    setCurrentScreen('AddDish');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="dark-content" />
+        {currentScreen === 'Home' ? (
+            <HomeScreen dishes={dishes} onNavigateToAdd={handleNavigateToAdd} />
+        ) : (
+            <AddDishScreen/>
+        )}
+      </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
+
+export default App;
