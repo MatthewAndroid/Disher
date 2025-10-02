@@ -29,7 +29,7 @@ const App = (): JSX.Element => {
         {currentScreen === 'Home' ? (
             <HomeScreen dishes={dishes} onNavigateToAdd={handleNavigateToAdd} />
         ) : (
-            <AddDishScreen/>
+            <AddDishScreen onSave={handleSaveDish} onCancel={handleCancel} />
         )}
       </SafeAreaView>
   );

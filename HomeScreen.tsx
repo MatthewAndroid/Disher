@@ -17,9 +17,9 @@ interface HomeScreenProps {
 const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd }) => {
     const getCourseColor = (course: Course): string => {
         switch (course) {
-            case 'Appetizer':
+            case 'Starter':
                 return '#D4F4DD';
-            case 'Main Course':
+            case 'Main':
                 return '#E3EFFF';
             case 'Dessert':
                 return '#FFE4F4';
@@ -30,9 +30,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd }) => {
 
     const getCourseTextColor = (course: Course): string => {
         switch (course) {
-            case 'Appetizer':
+            case 'Starter':
                 return '#00A651';
-            case 'Main Course':
+            case 'Main':
                 return '#2563EB';
             case 'Dessert':
                 return '#EC4899';
@@ -88,11 +88,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd }) => {
                     </View>
                 ))}
             </ScrollView>
-
-            <TouchableOpacity style={styles.addButton} onPress={onNavigateToAdd}>
-                <Plus color="#fff" size={20} />
-                <Text style={styles.addButtonText}>Add New Dish</Text>
-            </TouchableOpacity>
 
             <View style={styles.bottomNav}>
                 <TouchableOpacity style={styles.navItemActive}>

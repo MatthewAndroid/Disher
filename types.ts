@@ -1,4 +1,4 @@
-export type Course = 'Appetizer' | 'Main Course' | 'Dessert';
+export type Course = 'Starter' | 'Main' | 'Dessert';
 
 export interface Dish {
     id: string;
@@ -7,8 +7,3 @@ export interface Dish {
     course: Course;
     price: number;
 }
-
-export type RootStackParamList = {
-    Home: undefined;
-    AddDish: undefined;
-};
