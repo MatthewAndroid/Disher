@@ -57,9 +57,6 @@ const ManageScreen: React.FC<ManageScreenProps> = ({
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={onBack}>
-                    <ChevronLeft color="#000" size={24} />
-                </TouchableOpacity>
                 <Text style={styles.headerTitle}>Manage Menu</Text>
             </View>
 
