@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -14,26 +14,51 @@ import { Course, Dish } from './types';
 interface AddDishScreenProps {
     onSave: (dish: Dish) => void;
     onCancel: () => void;
+    editingDish?: Dish | null;
+    onNavigateToHome: () => void;
+    onNavigateToManage: () => void;
+    onNavigateToFilter: () => void;
 }
 
-const AddDishScreen: React.FC<AddDishScreenProps> = ({ onSave, onCancel }) => {
+const AddDishScreen: React.FC<AddDishScreenProps> = ({ 
+    onSave, 
+    onCancel, 
+    editingDish,
+    onNavigateToHome,
+    onNavigateToManage,
+    onNavigateToFilter,
+}) => {
     const [dishName, setDishName] = useState('');
     const [description, setDescription] = useState('');
     const [course, setCourse] = useState<Course | ''>('');
     const [price, setPrice] = useState('');
 
+    useEffect(() => {
+        if (editingDish) {
+            setDishName(editingDish.name);
+            setDescription(editingDish.description);
+            setCourse(editingDish.course);
+            setPrice(editingDish.price.toString());
+        } else {
+            setDishName('');
+            setDescription('');
+            setCourse('');
+            setPrice('');
+        }
+    }, [editingDish]);
+
     const handleSaveDish = () => {
         if (!dishName || !description || !course || !price) return;
 
-        const newDish: Dish = {
-            id: Date.now().toString(),
+        const dish: Dish = {
+            id: editingDish ? editingDish.id : Date.now().toString(),
             name: dishName,
             description,
             course: course as Course,
             price: parseFloat(price),
         };
 
-        onSave(newDish);
+        onSave(dish);
     };
 
     return (
@@ -42,7 +67,9 @@ const AddDishScreen: React.FC<AddDishScreenProps> = ({ onSave, onCancel }) => {
                 <TouchableOpacity onPress={onCancel}>
                     <ChevronLeft color="#000" size={24} />
                 </TouchableOpacity>
-                <Text style={styles.addHeaderTitle}>Add New Dish</Text>
+                <Text style={styles.addHeaderTitle}>
+                    {editingDish ? 'Edit Dish' : 'Add New Dish'}
+                </Text>
             </View>
 
             <ScrollView style={styles.formContainer}>
@@ -70,8 +97,8 @@ const AddDishScreen: React.FC<AddDishScreenProps> = ({ onSave, onCancel }) => {
                         onValueChange={(itemValue) => setCourse(itemValue)}
                         style={styles.picker}>
                         <Picker.Item label="Select course type" value="" />
-                        <Picker.Item label="Appetizer" value="Appetizer" />
-                        <Picker.Item label="Main Course" value="Main Course" />
+                        <Picker.Item label="Starter" value="Starter" />
+                        <Picker.Item label="Main" value="Main" />
                         <Picker.Item label="Dessert" value="Dessert" />
                     </Picker>
                 </View>
@@ -86,7 +113,9 @@ const AddDishScreen: React.FC<AddDishScreenProps> = ({ onSave, onCancel }) => {
                 />
 
                 <TouchableOpacity style={styles.saveButton} onPress={handleSaveDish}>
-                    <Text style={styles.saveButtonText}>Save Dish</Text>
+                    <Text style={styles.saveButtonText}>
+                        {editingDish ? 'Update Dish' : 'Save Dish'}
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
@@ -95,19 +124,21 @@ const AddDishScreen: React.FC<AddDishScreenProps> = ({ onSave, onCancel }) => {
             </ScrollView>
 
             <View style={styles.bottomNav}>
-                <TouchableOpacity style={styles.navItem} onPress={onCancel}>
+                <TouchableOpacity style={styles.navItem} onPress={onNavigateToHome}>
                     <Home color="#6B7280" size={20} />
                     <Text style={styles.navLabel}>Home</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.navItemActive}>
                     <Plus color="#fff" size={20} />
-                    <Text style={styles.navLabelActive}>Add</Text>
+                    <Text style={styles.navLabelActive}>
+                        {editingDish ? 'Edit' : 'Add'}
+                    </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.navItem}>
+                <TouchableOpacity style={styles.navItem} onPress={onNavigateToManage}>
                     <Settings color="#6B7280" size={20} />
                     <Text style={styles.navLabel}>Manage</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.navItem}>
+                <TouchableOpacity style={styles.navItem} onPress={onNavigateToFilter}>
                     <Filter color="#6B7280" size={20} />
                     <Text style={styles.navLabel}>Filter</Text>
                 </TouchableOpacity>

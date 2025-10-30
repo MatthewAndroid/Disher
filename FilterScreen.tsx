@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -9,14 +9,21 @@ import {
 import { Home, Plus, Settings, Filter } from 'lucide-react-native';
 import { Dish, Course } from './types';
 
-interface HomeScreenProps {
+interface FilterScreenProps {
     dishes: Dish[];
+    onNavigateToHome: () => void;
     onNavigateToAdd: () => void;
     onNavigateToManage: () => void;
-    onNavigateToFilter: () => void;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd, onNavigateToManage, onNavigateToFilter }) => {
+const FilterScreen: React.FC<FilterScreenProps> = ({
+    dishes,
+    onNavigateToHome,
+    onNavigateToAdd,
+    onNavigateToManage,
+}) => {
+    const [selectedFilter, setSelectedFilter] = useState<Course | 'All'>('All');
+
     const getCourseColor = (course: Course): string => {
         switch (course) {
             case 'Starter':
@@ -43,31 +50,90 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd, onNavi
         }
     };
 
-    const calculateAvgPrice = (): number => {
-        if (dishes.length === 0) return 0;
-        const total = dishes.reduce((sum, dish) => sum + dish.price, 0);
-        return total / dishes.length;
+    const getFilteredDishes = (): Dish[] => {
+        if (selectedFilter === 'All') {
+            return dishes;
+        }
+        return dishes.filter(dish => dish.course === selectedFilter);
     };
+
+    const getCountByCategory = (category: Course | 'All'): number => {
+        if (category === 'All') {
+            return dishes.length;
+        }
+        return dishes.filter(dish => dish.course === category).length;
+    };
+
+    const filteredDishes = getFilteredDishes();
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>My Menu</Text>
+            <Text style={styles.header}>Filter Menu</Text>
 
-            <View style={styles.statsContainer}>
-                <View style={styles.statCard}>
-                    <Text style={styles.statLabel}>Total Items</Text>
-                    <Text style={styles.statValue}>{dishes.length}</Text>
-                </View>
-                <View style={styles.statCard}>
-                    <Text style={styles.statLabel}>Avg Price</Text>
-                    <Text style={styles.statValue}>
-                        R{calculateAvgPrice().toFixed(2)}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
+                <TouchableOpacity
+                    style={[
+                        styles.filterChip,
+                        selectedFilter === 'All' && styles.filterChipActive,
+                    ]}
+                    onPress={() => setSelectedFilter('All')}>
+                    <Text
+                        style={[
+                            styles.filterText,
+                            selectedFilter === 'All' && styles.filterTextActive,
+                        ]}>
+                        All ({getCountByCategory('All')})
                     </Text>
-                </View>
-            </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[
+                        styles.filterChip,
+                        selectedFilter === 'Starter' && styles.filterChipActive,
+                    ]}
+                    onPress={() => setSelectedFilter('Starter')}>
+                    <Text
+                        style={[
+                            styles.filterText,
+                            selectedFilter === 'Starter' && styles.filterTextActive,
+                        ]}>
+                        Apps ({getCountByCategory('Starter')})
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[
+                        styles.filterChip,
+                        selectedFilter === 'Main' && styles.filterChipActive,
+                    ]}
+                    onPress={() => setSelectedFilter('Main')}>
+                    <Text
+                        style={[
+                            styles.filterText,
+                            selectedFilter === 'Main' && styles.filterTextActive,
+                        ]}>
+                        Mains ({getCountByCategory('Main')})
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[
+                        styles.filterChip,
+                        selectedFilter === 'Dessert' && styles.filterChipActive,
+                    ]}
+                    onPress={() => setSelectedFilter('Dessert')}>
+                    <Text
+                        style={[
+                            styles.filterText,
+                            selectedFilter === 'Dessert' && styles.filterTextActive,
+                        ]}>
+                        Desserts ({getCountByCategory('Dessert')})
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
 
             <ScrollView style={styles.dishList}>
-                {dishes.map((dish) => (
+                {filteredDishes.map((dish) => (
                     <View key={dish.id} style={styles.dishCard}>
                         <View style={styles.dishHeader}>
                             <Text style={styles.dishName}>{dish.name}</Text>
@@ -84,7 +150,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd, onNavi
                                     styles.courseText,
                                     { color: getCourseTextColor(dish.course) },
                                 ]}>
-                                {dish.course}
+                                {dish.course === 'Starter' ? 'Appetizer' : dish.course === 'Main' ? 'Main Course' : dish.course}
                             </Text>
                         </View>
                     </View>
@@ -92,9 +158,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd, onNavi
             </ScrollView>
 
             <View style={styles.bottomNav}>
-                <TouchableOpacity style={styles.navItemActive}>
-                    <Home color="#fff" size={20} />
-                    <Text style={styles.navLabelActive}>Home</Text>
+                <TouchableOpacity style={styles.navItem} onPress={onNavigateToHome}>
+                    <Home color="#6B7280" size={20} />
+                    <Text style={styles.navLabel}>Home</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.navItem} onPress={onNavigateToAdd}>
                     <Plus color="#6B7280" size={20} />
@@ -104,9 +170,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ dishes, onNavigateToAdd, onNavi
                     <Settings color="#6B7280" size={20} />
                     <Text style={styles.navLabel}>Manage</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.navItem} onPress={onNavigateToFilter}>
-                    <Filter color="#6B7280" size={20} />
-                    <Text style={styles.navLabel}>Filter</Text>
+                <TouchableOpacity style={styles.navItemActive}>
+                    <Filter color="#fff" size={20} />
+                    <Text style={styles.navLabelActive}>Filter</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -124,28 +190,33 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
     },
-    statsContainer: {
-        flexDirection: 'row',
-        padding: 16,
-        gap: 12,
-    },
-    statCard: {
-        flex: 1,
+    filterContainer: {
         backgroundColor: '#fff',
-        padding: 16,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+        maxHeight: 56,
     },
-    statLabel: {
+    filterChip: {
+        paddingHorizontal: 16,
+        paddingVertical: 6,
+        borderRadius: 20,
+        backgroundColor: '#F3F4F6',
+        marginRight: 8,
+        height: 32,
+        justifyContent: 'center',
+    },
+    filterChipActive: {
+        backgroundColor: '#000',
+    },
+    filterText: {
         fontSize: 14,
-        color: '#6B7280',
-        marginBottom: 8,
+        color: '#374151',
+        fontWeight: '500',
     },
-    statValue: {
-        fontSize: 28,
-        fontWeight: '600',
-        color: '#111827',
+    filterTextActive: {
+        color: '#fff',
     },
     dishList: {
         flex: 1,
@@ -220,4 +291,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;
+export default FilterScreen;
